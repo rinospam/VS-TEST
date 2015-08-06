@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using College.Models;
+using System.Data.Objects;
 
 namespace College.Controllers
 {
@@ -20,7 +21,7 @@ namespace College.Controllers
             //return View(db.Students.ToList());
             //IEnumerable<Students> model = new st_select_Result 
            
-            return View(db.st_select(1));
+            return View(db.st_select(null));
 
 
 
@@ -33,10 +34,10 @@ namespace College.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Students students = db.Students.Find(id);
-            Students students = DbSet<Students>(db.st_select(id)).
-        
-            if (db.st_select(id) == null)
+            //Students students = db.Students.Find(id);
+            Students students = db.st_select(id).FirstOrDefault();
+
+            if (students == null)
             {
                 return HttpNotFound();
             }
@@ -76,7 +77,8 @@ namespace College.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Students students = db.Students.Find(id);
+            Students students = db.st_select(id).FirstOrDefault();
+
             if (students == null)
             {
                 return HttpNotFound();
@@ -93,7 +95,8 @@ namespace College.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(students).State = EntityState.Modified;
+                //db.Entry(students).State = EntityState.Modified;
+                db.st_update(students.id, students.FirstName);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -107,7 +110,7 @@ namespace College.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Students students = db.Students.Find(id);
+            Students students = db.st_select(id).FirstOrDefault();
             if (students == null)
             {
                 return HttpNotFound();
@@ -120,8 +123,10 @@ namespace College.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Students students = db.Students.Find(id);
-            db.Students.Remove(students);
+            Students students = db.st_select(id).FirstOrDefault();
+
+            db.st_delete(id);
+
             db.SaveChanges();
             return RedirectToAction("Index");
         }
